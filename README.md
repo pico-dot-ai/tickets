@@ -1,4 +1,4 @@
-# TICKETS..md
+# TICKETS.md
 
 An AI-native, repo-native ticketing system designed for **parallel, long-running agentic development** (and normal human workflows) without relying on network access or external services.
 
