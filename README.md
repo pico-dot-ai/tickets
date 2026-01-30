@@ -1,6 +1,6 @@
 # TICKETS.md
 
-An Agent native, repo-native ticketing system designed for **parallel, long-running agentic development** (and normal human workflows) without relying on network access or external services.
+An Agent native, in-repo ticketing system designed for **parallel, long-running agentic development** (and normal human workflows) without relying on network access or external services.
 
 This repo contains the system specification in `REQUIREMENTS.md` and will contain an in-repo `tickets` CLI plus templates (`TICKETS.md`, ticket template, etc.) that implement that spec.
 
