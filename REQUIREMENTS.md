@@ -4,8 +4,8 @@
 
 This `REQUIREMENTS.md` exists **only** to specify what Codex (or other coding agents) must implement in this repo.
 
-All operational rules for humans and agents (how tickets are written, interpreted, and used day-to-day) MUST live in `tickets.md`.
-`tickets.md` is the user-facing, repo-native “manual.” The tooling generated from this requirements doc MUST treat `tickets.md` as the canonical source of workflow guidance.
+All operational rules for humans and agents (how tickets are written, interpreted, and used day-to-day) MUST live in `TICKETS.md`.
+`TICKETS.md` is the user-facing, repo-native “manual.” The tooling generated from this requirements doc MUST treat `TICKETS.md` as the canonical source of workflow guidance.
 
 ## 1. Purpose
 
@@ -85,7 +85,7 @@ The system must make it easy to:
 
 ### 5.1 Required
 
-- `tickets.md` — system overview and contributor/agent conventions.
+- `TICKETS.md` — system overview and contributor/agent conventions.
 - `/.tickets/` — directory containing one subdirectory per ticket.
 
 ### 5.2 Recommended (optional)
@@ -462,14 +462,14 @@ Integration requirement:
 
 Creates:
 
-- `tickets.md` (if missing, using a template)
+- `TICKETS.md` (if missing, using a template)
 - `AGENTS_EXAMPLE.md` (if missing, using a template) to bootstrap agentic use of this repo-native workflow
 - `/.tickets/` directory (if missing)
 - optional config file if chosen
 
 Notes:
 - `AGENTS_EXAMPLE.md` is intentionally not named `AGENTS.md` to avoid unexpected behavior when this framework is copied into other repos. Users MAY copy/rename it to `AGENTS.md` if their agent harness supports it.
-- The `AGENTS_EXAMPLE.md` template SHOULD instruct agents (and humans using agentic coding tools) to read `tickets.md` first, then use the `tickets` CLI (`validate --issues`, `repair`, `log --machine`) while respecting `agent_limits`.
+- The `AGENTS_EXAMPLE.md` template SHOULD instruct agents (and humans using agentic coding tools) to read `TICKETS.md` first, then use the `tickets` CLI (`validate --issues`, `repair`, `log --machine`) while respecting `agent_limits`.
 
 ### 11.2 `tickets new`
 
@@ -666,7 +666,7 @@ Optional but recommended:
 
 ### 13.1 GitHub Action: validate tickets on PR
 
-- Runs `tickets validate` on PRs that touch `tickets.md` or `/.tickets/**`.
+- Runs `tickets validate` on PRs that touch `TICKETS.md` or `/.tickets/**`.
 - Fails CI on validation errors.
 
 ### 13.2 GitHub Issues compatibility
@@ -686,7 +686,7 @@ Tooling MUST:
 - Avoid collecting environment dumps.
 - Keep logs concise and focused on engineering context.
 
-Agent guidance (documented in `tickets.md`):
+Agent guidance (documented in `TICKETS.md`):
 
 - Prefer minimal diffs.
 - Avoid mass formatting or refactors unless required by ticket.
@@ -715,8 +715,8 @@ The implementation MUST include tests that verify:
 
 Codex implementation must produce:
 
-- `tickets.md` template content (system overview + agent/human conventions), including guidance for humans who choose to use agentic coding tools to follow the “machine workflow” conventions in §8.4.
-- `AGENTS_EXAMPLE.md` template content that bootstraps agent harnesses to read `tickets.md` and use the `tickets` CLI.
+- `TICKETS.md` template content (system overview + agent/human conventions), including guidance for humans who choose to use agentic coding tools to follow the “machine workflow” conventions in §8.4.
+- `AGENTS_EXAMPLE.md` template content that bootstraps agent harnesses to read `TICKETS.md` and use the `tickets` CLI.
 - Ticket template content (or embedded template in CLI).
 - CLI tool with commands in §11.
 - Validation + tests in §16.
