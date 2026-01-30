@@ -10,7 +10,7 @@ This repo contains the system specification in `REQUIREMENTS.md` and will contai
 - A merge-friendly logging model (append-only JSONL logs per run) that supports multiple agents working concurrently across branches.
 - A small CLI surface (`tickets init/new/validate/log/status/list/repair`) intended to be the *single integration point* for agents, IDE integrations, and humans using agentic tools.
 
-## Why this exists (the parallel agent problem)
+## Why this exists
 
 Parallel, long-running agentic work tends to fail in predictable ways:
 
@@ -43,3 +43,22 @@ This system addresses those issues by keeping ticket definitions stable and push
 
 - Read the spec: `REQUIREMENTS.md`
 - Once implemented, bootstrap the repo workflow with: `tickets init`
+
+## Usage and tooling
+
+For full workflow, CLI commands, and ticket format, see `TICKETS.md` (canonical). README is project overview and FAQ only.
+
+## Dependencies
+
+The CLI and templates are Python-based and require a couple of lightweight libraries:
+
+- `PyYAML` (>= 6.0): YAML parsing/serialization for ticket front matter, issue reports, and repairs.
+- `uuid6` (>= 2024.1.25): Generates UUIDv7 IDs for tickets and run logs, matching the spec’s required ID format.
+
+Install them directly:
+
+```
+python3 -m pip install "PyYAML>=6.0" "uuid6>=2024.1.25"
+```
+
+Ensure these versions or newer are on the Python path before running `scripts/tickets`.

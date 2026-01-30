@@ -14,7 +14,7 @@ def collect_ticket_paths(target: str | None) -> List[Path]:
     return [p / "ticket.md" for p in util.list_ticket_dirs() if (p / "ticket.md").exists()]
 
 
-def validate_ticket(path: Path) -> Tuple[List[Dict[str, Any]], Dict[str, Any], str]:
+def validate_ticket(path: Path, all_fields: bool = False) -> Tuple[List[Dict[str, Any]], Dict[str, Any], str]:
     issues: List[Dict[str, Any]] = []
     try:
         fm, body = util.load_ticket(path)
@@ -68,6 +68,33 @@ def validate_ticket(path: Path) -> Tuple[List[Dict[str, Any]], Dict[str, Any], s
                     issues.append({"severity": "error", "code": "AGENT_LIMIT_VALUE_INVALID", "message": f"{k} must be positive int", "ticket_path": str(path)})
     elif "agent_limits" in fm:
         issues.append({"severity": "error", "code": "AGENT_LIMITS_INVALID", "message": "agent_limits must be mapping", "ticket_path": str(path)})
+
+    if all_fields:
+        if "priority" in fm and fm["priority"] not in ["low", "medium", "high", "critical"]:
+            issues.append({"severity": "error", "code": "PRIORITY_INVALID", "message": "priority must be low|medium|high|critical", "ticket_path": str(path), "optional": True})
+        if "labels" in fm:
+            if not isinstance(fm["labels"], list):
+                issues.append({"severity": "error", "code": "LABELS_NOT_LIST", "message": "labels must be list of strings", "ticket_path": str(path), "optional": True})
+            else:
+                for entry in fm["labels"]:
+                    if not isinstance(entry, str):
+                        issues.append({"severity": "error", "code": "LABEL_INVALID_ENTRY", "message": "labels entries must be strings", "ticket_path": str(path), "optional": True})
+        if "assignment" in fm and isinstance(fm["assignment"], dict):
+            owner = fm["assignment"].get("owner")
+            if owner is not None and not isinstance(owner, str):
+                issues.append({"severity": "error", "code": "ASSIGNMENT_OWNER_INVALID", "message": "assignment.owner must be string", "ticket_path": str(path), "optional": True})
+        if "verification" in fm:
+            ver = fm["verification"]
+            if not isinstance(ver, dict):
+                issues.append({"severity": "error", "code": "VERIFICATION_INVALID", "message": "verification must be mapping", "ticket_path": str(path), "optional": True})
+            else:
+                cmds = ver.get("commands")
+                if cmds is not None and not isinstance(cmds, list):
+                    issues.append({"severity": "error", "code": "VERIFICATION_COMMANDS_INVALID", "message": "verification.commands must be list of strings", "ticket_path": str(path), "optional": True})
+                elif isinstance(cmds, list):
+                    for entry in cmds:
+                        if not isinstance(entry, str):
+                            issues.append({"severity": "error", "code": "VERIFICATION_COMMAND_INVALID", "message": "verification.commands entries must be strings", "ticket_path": str(path), "optional": True})
 
     required_sections = ["# Ticket", "## Description", "## Acceptance Criteria", "## Verification"]
     for heading in required_sections:

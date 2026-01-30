@@ -30,11 +30,22 @@ This system addresses those problems with stable `ticket.md` files, merge-friend
 ### Initialize
 Create the repo structure and templates (idempotent):
 - `./scripts/tickets init`
+- Add `--examples` to generate example tickets (7 sample tickets with required/optional fields, relationships, and logs).
 
 This creates (if missing): `/.tickets/`, `TICKETS.md`, and `AGENTS_EXAMPLE.md`.
 
 ### Create a ticket
-- `./scripts/tickets new --title "Short title"`
+- `./scripts/tickets new --title "Short title"` (defaults: `status: todo`, `created_at: now`)
+- Optional flags to set front matter at creation:
+  - `--status todo|doing|blocked|done|canceled`
+  - `--priority low|medium|high|critical`
+  - `--label <label>` (repeatable)
+  - `--assignment-mode human_only|agent_only|mixed`
+  - `--assignment-owner <@user|team:...|agent:...>`
+  - `--dependency <ticket-id>` `--block <ticket-id>` `--related <ticket-id>` (repeatable)
+  - `--iteration-timebox-minutes <int>` `--max-iterations <int>` `--max-tool-calls <int>` `--checkpoint-every-minutes <int>`
+  - `--verification-command "<cmd>"` (repeatable)
+  - `--created-at <ISO8601 UTC>`
 
 This prints the new ticket ID (a lowercase UUIDv7) and creates:
 - `/.tickets/<ticket-id>/ticket.md`
@@ -42,10 +53,11 @@ This prints the new ticket ID (a lowercase UUIDv7) and creates:
 
 ### Validate, then work
 - `./scripts/tickets validate`
+- Add `--all-fields` to also validate optional front-matter (priority, labels, assignment.owner, verification.commands) and include those in `--issues` reports.
 
 If validation fails and you want a complete report + repair plan:
-- `./scripts/tickets validate --issues > issues.yaml`
-- `./scripts/tickets repair --issues-file issues.yaml --non-interactive`
+- `./scripts/tickets validate --issues --all-fields > issues.yaml`
+- `./scripts/tickets repair --issues-file issues.yaml --all-fields --non-interactive`
 
 ### Log your work (human or agent)
 Use the CLI to write logs whenever possible (merge-friendly, structured, and tooling-validated).
@@ -311,10 +323,13 @@ Avoid maintaining an authoritative “subtickets list” by frequently editing t
   - exit `0`: ok
   - exit `1`: validation errors
   - exit `2`: tooling/IO errors
+- Add `--all-fields` to validate optional front-matter (priority, labels, assignment.owner, verification.commands) and include corresponding repairs in `--issues` output.
 
 - `./scripts/tickets validate --issues` emits a machine-readable report with:
   - all `issues` (errors and warnings), and
   - a `repairs` section that can be edited and consumed by `tickets repair` in `--non-interactive` mode.
+- Use `--all-fields` with `validate` and `repair` when you want optional front-matter fields to be checked and fixed.
+- Use `--interactive` with `repair` to step through each fix, see what’s expected, and supply values (include `--all-fields` to cover optional fields too).
 
 Minimal shape (example):
 ```yaml
