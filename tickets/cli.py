@@ -306,15 +306,38 @@ def load_ticket_graph(ticket_ref: str | None) -> Dict[str, Any]:
             },
         )
         for dep in fm.get("dependencies", []) or []:
-            nodes.setdefault(dep, {"id": dep, "title": "", "status": "", "path": f"/.tickets/{dep}/ticket.md"})
+            nodes.setdefault(dep, _load_node(dep))
             edges.append({"type": "dependency", "from": dep, "to": tid})
         for blk in fm.get("blocks", []) or []:
-            nodes.setdefault(blk, {"id": blk, "title": "", "status": "", "path": f"/.tickets/{blk}/ticket.md"})
+            nodes.setdefault(blk, _load_node(blk))
             edges.append({"type": "blocks", "from": tid, "to": blk})
         for rel in fm.get("related", []) or []:
-            nodes.setdefault(rel, {"id": rel, "title": "", "status": "", "path": f"/.tickets/{rel}/ticket.md"})
+            nodes.setdefault(rel, _load_node(rel))
             edges.append({"type": "related", "from": tid, "to": rel})
     return {"nodes": list(nodes.values()), "edges": edges, "root_id": root_id}
+
+
+def _load_node(ticket_id: str) -> Dict[str, Any]:
+    """
+    Best-effort load of a ticket by id to populate title/status.
+    Falls back to placeholders if the file is missing or unreadable.
+    """
+    tpath = util.tickets_dir() / ticket_id / "ticket.md"
+    if tpath.exists():
+        try:
+            fm, _ = util.load_ticket(tpath)
+            return {
+                "id": ticket_id,
+                "title": fm.get("title", ticket_id),
+                "status": fm.get("status", ""),
+                "priority": fm.get("priority"),
+                "owner": (fm.get("assignment") or {}).get("owner"),
+                "mode": (fm.get("assignment") or {}).get("mode"),
+                "path": str(tpath),
+            }
+        except Exception:
+            pass
+    return {"id": ticket_id, "title": ticket_id, "status": "", "path": f"/.tickets/{ticket_id}/ticket.md"}
 
 
 def render_mermaid(graph: Dict[str, Any], include_related: bool, timestamp: str) -> str:
